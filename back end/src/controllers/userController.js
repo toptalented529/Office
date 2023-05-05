@@ -25,7 +25,6 @@ export const register = async (req, res, next) => {
     const { address } = req.body
     try {
         const existinguser = await models.User.findOne({ where: { address } });
-        console.log(existinguser, address)
         if (!existinguser) {
             const nonce = crypto.createHmac('sha256', process.env.NONCE_SECRET)
                 .update(address + uuid.v4())
@@ -38,7 +37,6 @@ export const register = async (req, res, next) => {
             });
             const maxId = maxIdResult.get('maxId') || 0;
             const nextId = maxId + 1;
-            console.log("eree", existinguser, nonce, nextId)
 
             const user = await models.User.create({
                 id: nextId,
@@ -66,7 +64,6 @@ export const restoreAccount = async (req, res, next) => {
     const { address } = req.body
     try {
         const existinguser = await models.User.findOne({ where: { address } });
-        console.log(existinguser, address)
         if (!existinguser) {
            
          
@@ -93,13 +90,11 @@ export const registerForOld = async (req, res, next) => {
     inv_u?.map(async (inv, index) => {
         const { id, name, seudonimo, pwd, eml, inv_ref, act_unepro, sal, ran_u, tkns, hayeks, emp, emp_prod, emp_inv, act_tkn, act_prod, nombramiento } = inv
         try {
-            console.log("555555555555555555555555555", sal)
             const existinguser = await models.User.findOne({ where: { id } });
             if (!existinguser) {
 
                 const nickname = eml.split('@')[0]
                 const usable_NickName = await getNickName(nickname, 0)
-                console.log(nickname, usable_NickName)
                 const transaction = await models.User.create({
                     id,
                     name,
@@ -121,8 +116,6 @@ export const registerForOld = async (req, res, next) => {
 
 
                 })
-                console.log(transaction.id)
-                // res.status(200).json({ id:transaction.id })
             }
 
         } catch (err) {
@@ -177,7 +170,6 @@ export const login = async (req, res, next) => {
     }
 
     // TODO set expire time to be 24 hours
-    console.log("222222222222222", process.env.JWT_SECRET, user.id)
     const token = jwt.sign({ id: user.id, address: req.body.address }, process.env.JWT_SECRET);
 
     return res.status(200).json({ success: true, jwt: token });
@@ -194,11 +186,9 @@ export const me = async (req, res) => {
     let childrenIDArray = []
      try{
         const resultArray = await contract?.methods.getNodeChildren(existinguser.id).call();
-        console.log(resultArray);
         my_rangeAmount = await contract.methods.getNodeRangeAccum(existinguser.id).call();
         const my_range = await contract.methods.getNodeRange(existinguser.id).call();
         const range = Ranges.indexOf(my_range) +1
-        console.log(my_range,range)
         for(let i = 0; i< resultArray.length; i ++ ) {
         const result = await contract.methods.getPurchasedAmount(resultArray[i]).call();
         const rangeResult = await contract.methods.getNodeRangeAccum(resultArray[i]).call();
@@ -264,7 +254,6 @@ export const getUser = async (req, res) => {
     let  my_rangeAmount = []
      try{
         const resultArray = await contract.methods.getNodeChildren(existinguser.id).call();
-        console.log(resultArray);
         my_rangeAmount = await contract.methods.getNodeRangeAccum(existinguser.id).call();
 
         for(let i = 0; i< resultArray.length; i ++ ) {
@@ -356,7 +345,6 @@ export const mnemonic = async (req, res) => {
         const privateKey = mnemonicWallet.privateKey;
         const publicKey = mnemonicWallet.publicKey;
 
-        console.log(mnemonicWallet.privateKey)
         res.status(200).json({ mnemonic, privateKey, publicKey })
 
     } catch (e) {
@@ -369,7 +357,6 @@ export const verifySignature = async (address, signature) => {
     const user = await models.User.findOne({ where: { address } });
     if (user != null) {
         // const msg = user.nonce;
-        console.log("1111111111111111111111", msg)
         const msg = `Signing to Office: ${user.nonce}`;
 
     // We now are in possession of msg, publicAddress and signature. We
@@ -402,7 +389,6 @@ export const verifySignature = async (address, signature) => {
 }
 export const setPin = async (req, res) => {
     const existinguser = await models.User.findOne({ where: { address: req.address } });
-    console.log("99999999999", req.body)
     existinguser.pin = req.body.pin;
     await existinguser.save()
     res.status(200).json({ user: existinguser, success: true })
@@ -418,7 +404,6 @@ export const setNickName = async (req, res) => {
         res.status(400).json({ success: "no user exist" })
         return
     }
-    console.log("77777777777777777777", req.body)
     existinguser.nickname = req.body.nickname;
     const doubleUser = await models.User.findOne({ where: { nickname: req.body.nickname } })
     if (doubleUser) {
@@ -437,7 +422,6 @@ export const setNickName = async (req, res) => {
 
 export const setSponserName = async (req, res) => {
     const sponser = await models.User.findOne({ where: { nickname: req.body.sponsername } })
-    console.log("555555555555555", req.body.sponsername)
     if (!sponser) {
         res.status(404).json({ success: false })
         return
@@ -447,7 +431,6 @@ export const setSponserName = async (req, res) => {
         res.status(400).json({ success: false })
         return
     }
-    console.log("666666666666", req.body)
     existinguser.parent_id = sponser.id
     await existinguser.save()
 
@@ -490,7 +473,6 @@ export const addBlockchainMembers = async (req, res) => {
 
 
     const users = await models.User.findAll()
-    console.log("24323423",users.length)
     for (let i = 0; i < users.length; i += 20) {
         let usersID = [];
         let users_Parent_ID = [];
@@ -531,7 +513,6 @@ export const addBlockchainMembers = async (req, res) => {
 /////////////////check email and password match ////////////
 
 export const checkOldAccount = async (req, res) => {
-    console.log("8888888888888888888", req.query.email)
     const oldUser = await models.User.findOne({ where: { eml: req.query.email } });
     if (!oldUser) {
         res.status(400).json({ success: false });
@@ -676,7 +657,6 @@ export const approveSignUp = async (req,res) => {
                 
             }
         })
-        console.log("22222222222222222222",customerId.data.items[0].id)
         
         request.accepted =true;
         await request.save()

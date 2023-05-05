@@ -23,6 +23,8 @@ const models = {
 	Hayek: sequelize.import('./hayek'),
 	MagentoCagetory: sequelize.import('./magentoCategory'),
 	MarketplaceSginup: sequelize.import('./marketplaceSignup'),
+	Product: sequelize.import('./product'),
+  Notification: sequelize.import("./notification")
 }
 Object.keys(models).forEach(key => {
     if ('associate' in models[key]) {

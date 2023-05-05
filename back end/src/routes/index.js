@@ -34,6 +34,7 @@ router.post('/account/import',userController.registerForOld)
 router.post('/transaction/import-hayek',transactionController.register_hayek)
 router.post('/transaction/import-genu',transactionController.register_genu)
 router.get('/transaction/getProducts',transactionController.getProducts)
+router.post('/transaction/setProducts',transactionController.setProducts)
 router.post('/transaction/setMagentCategory',transactionController.setMagentCategory)
 router.post('/transaction/settransaction',useAuth, transactionController.setTransaction)
 // this is for office app to check any request from margento
@@ -43,6 +44,15 @@ router.post('/account/marketplaceRequest', userController.setSignUpRequest)
 router.post('/account/marketplaceRequestApprove',useAuth, userController.approveSignUp)
 router.post('/account/marketplaceRequestReject', userController.rejectSignUp)
 router.get('/account/checkethereumaddress', userController.checkEthereumAddress)
+
+
+
+
+router.post('/account/setnotification',useAuth, transactionController.setNotification)
+router.get('/account/getnotification', transactionController.getNotification)
+
+
+
 
 
 //doctor controllers

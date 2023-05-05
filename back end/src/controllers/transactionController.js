@@ -17,6 +17,7 @@ const Wallet = require('ethereumjs-wallet')
 const ethers = require('ethers');
 const { bufferToHex } = require('ethereumjs-util');
 const { recoverPersonalSignature } = require('eth-sig-util')
+const { Op } = require('sequelize');
 
 
 export const register = async (req, res, next) => {
@@ -50,8 +51,6 @@ export const register = async (req, res, next) => {
                     cant,
                     tracking_number
                 })
-                console.log(transaction.id)
-                // res.status(200).json({ id:transaction.id })
             }
 
         } catch (err) {
@@ -116,15 +115,12 @@ export const register_hayek = async (req, res, next) => {
             const existinguser = await models.Hayek.findOne({ where: { id } });
             if (!existinguser) {
 
-                console.log(hay_u, id, cant, inv_u)
                 const transaction = await models.Hayek.create({
                     code: id,
                     user_id: inv_u,
                     amount_token: cant,
                     series_name: hay_u,
                 })
-                console.log(transaction.id)
-                // res.status(200).json({ id:transaction.id })
             }
 
         } catch (err) {
@@ -160,8 +156,6 @@ export const register_genu = async (req, res, next) => {
                     amount_token: cant,
                     series_name: gen_u,
                 })
-                console.log(transaction.id)
-                // res.status(200).json({ id:transaction.id })
             }
 
         } catch (err) {
@@ -182,13 +176,34 @@ export const getProducts = async (req, res) => {
     const productItems = []
 
     try {
+    
+        const products = await  models.Product.findAll()
+
+
+
+        res.status(200).json({ items: products })
+    } catch (e) {
+        res.status(401).json({ success: false })
+    }
+
+
+}
+
+
+export const setProducts = async (req, res) => {
+    const agent = new https.Agent({
+        rejectUnauthorized: false,
+    });
+
+    const productItems = []
+
+    try {
         const response = await axios.post("https://31.220.82.149/rest/V1/integration/admin/token", {
             username: "admin",
             password: "admin123",
         }, {
             httpsAgent: agent,
         })
-        console.log(response.data)
 
         const response1 = await axios.get("https://31.220.82.149/rest/V1/products?searchCriteria[pageSize]=20", {
             httpsAgent: agent,
@@ -196,7 +211,6 @@ export const getProducts = async (req, res) => {
                 Authorization: `Bearer ${response.data}`
             }
         })
-        console.log("23423423423",response1.data.items)
 
 
         await Promise.all(response1.data.items.map(async (item, index) => {
@@ -205,13 +219,12 @@ export const getProducts = async (req, res) => {
                 const id = item.extension_attributes.category_links?.filter((link, index) => {
                     return link.position === 0;
                 });
-                console.log("11111111111111111111",id)
                 const preURL = "https://31.220.82.149/media/catalog/product"
                 if(id === null || id.length === 0) return; // Add a check for null or empty array
+                if(id[0]?.category_id === null) return; // Add a check for null or empty array
                 const res55 = await models.MagentoCagetory.findOne({ where: { id: id[0].category_id } });
-                console.log("here", res55?.category);
-
-                const itemData = {
+ 
+                const product = await models.Product.create({
                     name: item.name,
                     description: item.custom_attributes.filter((attribute) => {
                         return attribute.attribute_code === "meta_description";
@@ -220,12 +233,10 @@ export const getProducts = async (req, res) => {
                     image: item.media_gallery_entries[0] ? preURL + item.media_gallery_entries[0].file : "null",
                     category: res55 ? res55.category : "blockchain",
                     subcategory: res55 ? res55.subcategory : "pro",
-                };
-                console.log("here", itemData);
-
-                productItems.push(itemData);
+                })
+                
             } catch (e) {
-                console.log("22222222222222222222222222");
+                console.log("error",e)
                 return res.status(401).json({ success: false });
             }
         }));
@@ -243,6 +254,9 @@ export const getProducts = async (req, res) => {
 
 }
 
+
+
+
 export const setMagentCategory = async (req, res) => {
 
     try {
@@ -259,7 +273,6 @@ export const setMagentCategory = async (req, res) => {
         
             const signed = await web3.eth.accounts.signTransaction(options, privateKey);
             const receipt = await web3.eth.sendSignedTransaction(signed.rawTransaction);
-            console.log(receipt)
         
         
         }catch(e){
@@ -293,7 +306,6 @@ export const setTransaction = async (req, res) => {
         
         const user = await models.User.findOne({where:{address:req.address}})
         
-        console.log("23232",req.body.name)
 
 
         const maxIdResult = await models.Transaction.findOne({
@@ -303,7 +315,6 @@ export const setTransaction = async (req, res) => {
         });
         const maxId = maxIdResult.get('maxId') || 0;
         const nextId = maxId + 1;
-        console.log("7777777777777777777",nextId)
         await models.Transaction.create({
             id:nextId,
             name: req.body.name,
@@ -352,4 +363,38 @@ export const setTransaction = async (req, res) => {
 
 
 
+}
+
+export const  setNotification = async (req,res) => {
+
+try{
+    const notification =await models.Notification.create({
+        title:req.body.title,
+        subTitle:req.body.subTitle,
+        text:req.body.text
+    })
+
+    console.log(notification)
+    res.status(200).json({success:true})
+
+}catch(e){
+    res.status(403).json({success:false})
+
+}
+
+
+}
+
+export const getNotification = async (req,res) => {
+    const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000); // Get the date 5 days ago
+    try {
+      const notifications = await models.Notification.findAll({
+        where: {
+          createdAt: { [Op.gte]: fiveDaysAgo } // Filter records created within the last 5 days
+        }
+      });
+      res.status(200).json({success:true, notifications});
+    } catch(e) {
+      res.status(403).json({success:false});
+    }
 }
