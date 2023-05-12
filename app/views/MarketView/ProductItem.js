@@ -161,7 +161,7 @@ const ProductItem = ({ user ,data, etheruem }) => {
             <View style={styles.productItemBox}>
               {
                 data.image !== 'null' ?
-                  <Image source={{ uri: "https://31.220.82.149/media/catalog/product//m/s/msg5369252484-18164.jpg" }} style={styles.productItem} resizeMode="cover" />
+                  <Image source={{ uri: "https://65.109.156.225/media/catalog/product//m/s/msg5369252484-18164.jpg" }} style={styles.productItem} resizeMode="cover" />
                   : <Image source={images.test_product} style={styles.productItem} />
               }
             </View>

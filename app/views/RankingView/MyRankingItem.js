@@ -132,7 +132,7 @@ const MyRanking = ({ data }) => {
            }
           </View>
           <View style={{ flexDirection: "column", marginRight: width * 0.05, }}>
-            <Text style ={{color:"#982ec3"}}>@{sponser && sponser.nickname}</Text>
+            <Text style ={{color:"#982ec3"}}>@{user && user.nickname}</Text>
             <Text>MI RANGO ACTUAL</Text>
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>{user && Ranges[user.range -1].name }<Text style={{ fontWeight: "normal" }}> {I18N.t('Balance')}</Text></Text>
             <Text style={{ color: "#982ec3", fontWeight: "bold" }}>{rangeAmount ? rangeAmount[2]:"$000"}</Text>

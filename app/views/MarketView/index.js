@@ -73,9 +73,9 @@ const MarketView = props => {
           title: item.name,  
           price:item.price,
           description: item.description[0].value,
-          // category: item.category,
+          category: item.category,
           category:"blockchain",
-          // subcategory: item.subcategory,
+          subcategory: item.subcategory,
           subcategory:"pro",
           image:item.image,
         })

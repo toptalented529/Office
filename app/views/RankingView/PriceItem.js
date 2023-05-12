@@ -82,7 +82,7 @@ const PriceItem = ({ data }) => {
                 <View style={{ flexDirection: "row", marginBottom: height * 0.01, justifyContent: "space-between" }}>
 
                   <Text style={{ color: "#fff" }}>{user&&user.nickname}</Text>
-                  <Text style={{ color: "#fff" }}>{data.purchased_amount}</Text>
+                  <Text style={{ color: "#76ffff" }}>${data.purchased_amount}</Text>
                 </View>
                 <View style={styles.rangeTeamline}>
                   <View style={[styles.rangeTeamPercentage, { width: percent * 0.4 * width, backgroundColor: percent > 0.75 ? "rgba(89, 255, 116, 0.69)" : "#e84141" }]}></View>

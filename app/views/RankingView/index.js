@@ -80,7 +80,7 @@ const RankingView = ({ subProp }) => {
         let childrenData = []
         const currentRank = res.data.user.my_team_rank
         const prevRank = res.data.user.my_team_prev_rank
-        console.log(currentRank,prevRank)
+        console.log(currentRank, prevRank)
 
         res.data.children.forEach((child, index) => {
           const curRank = currentRank.indexOf(child.id)
@@ -94,21 +94,21 @@ const RankingView = ({ subProp }) => {
 
           childrenData.push(
             {
-              id: index+1,
+              id: index + 1,
               userID: child.id,
               name: child.nickname,
-              purchased_amount:parseInt(res.data.children_purchased[index]),
+              purchased_amount: parseInt(res.data.children_purchased[index]),
               range: parseInt(child.range),
               rankRised: rankStatus,
-              rangeAmount:parseInt(res.data.rangeAmount[index][2])
+              rangeAmount: parseInt(res.data.rangeAmount[index][2])
 
             }
           )
         })
 
-        if(childrenData.length > 0){
+        if (childrenData.length > 0) {
           setCdata(childrenData)
-        }else{
+        } else {
           setCdata(tData)
 
         }
@@ -139,21 +139,21 @@ const RankingView = ({ subProp }) => {
 
           childrenData.push(
             {
-              id: index+1,
+              id: index + 1,
               userID: child.id,
               name: child.nickname,
-              purchased_amount:parseInt(res.data.children_purchased[index]),
+              purchased_amount: parseInt(res.data.children_purchased[index]),
               range: parseInt(child.range),
               rankRised: rankStatus,
-              rangeAmount:parseInt(res.data.children_rangeAmount[index][2])
+              rangeAmount: parseInt(res.data.children_rangeAmount[index][2])
 
             }
           )
         })
 
-        if(childrenData.length > 0){
+        if (childrenData.length > 0) {
           setCdata(childrenData)
-        }else{
+        } else {
           setCdata(tData)
 
         }
@@ -164,56 +164,74 @@ const RankingView = ({ subProp }) => {
   }, [userID])
 
   const tData = [
-    {
-      id: 1,
-      userID: 1,
-      issue: 10,
-      amount: 20000,
-      price: 224.1,
-      existance: 224.1,
-      range:1,
-    },
-    {
-      id: 2,
-      userID: 2,
-      issue: 10,
-      amount: 20000,
-      price: 224.1,
-      existance: 224.1,
-      range:1,
-
-    },
     // {
-    //   id: 3,
-    //   userID: 3,
-    //   issue: 10,
     //   amount: 20000,
-    //   price: 224.1,
     //   existance: 224.1,
+    //   id: 1,
+    //   issue: 10,
+    //   price: 224.1,
+    //   range:1,
+    //   userID: 1,
     // },
     // {
-    //   id: 4,
-    //   userID: 4,
-    //   issue: 10,
     //   amount: 20000,
-    //   price: 224.1,
     //   existance: 224.1,
+    //   id: 2,
+    //   issue: 10,
+    //   price: 224.1,
+    //   range:1,
+    //   userID: 2,
+
+    // },
+    // {
+    //   amount: 20000,
+    //   existance: 224.1,
+    //   id: 1,
+    //   issue: 10,
+    //   price: 224.1,
+    //   range:1,
+    //   userID: 1,
+    // },
+    // {
+    //   amount: 20000,
+    //   existance: 224.1,
+    //   id: 2,
+    //   issue: 10,
+    //   price: 224.1,
+    //   range:1,
+    //   userID: 2,
+
     // },
   ];
 
   const RenderFlatListItem = ({ data, type }) => {
     if (data.length > 0) {
+     
+
+        return (
+          <ScrollView>
+            <MyRanking data={userID} />
+            <View style = {{flexDirection:"row", paddingLeft:width * 0.1}}>
+              <Text style = {{color:"#fff",fontFamily:"Poppins",fontWeight:"bold"}}>Team </Text>
+              <Text style = {{color:"#00edcf",fontFamily:"Poppins"}} >{`( ${data.length} PERSONAS)`}</Text>
+            </View>
+            {data.map(idx => (
+              <PriceItem data={idx} key={'ti' + idx.id} />
+            ))}
+          </ScrollView>
+        );
+      
+    } else {
       return (
-        <ScrollView>
+        <View>
           <MyRanking data={userID} />
 
-          {data.map(idx => (
-            <PriceItem data={idx} key={'ti' + idx.id} />
-          ))}
-        </ScrollView>
-      );
-    } else {
-      return <></>;
+          <Text style={{
+            color: "#FFD700",
+            alignSelf: 'center'
+          }}>No Children</Text>
+        </View>
+      )
     }
   };
 
@@ -229,21 +247,21 @@ const RankingView = ({ subProp }) => {
 
   )
   const RenderFlatListItemForRange = ({ data, type }) => {
-    if (data.length > 0) {
+    if (data.length === 0) {
       return (
         <View>
-            <ScrollView >
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <MyRanking data={userID} />
-            <Text style={{ color: "#fff", marginLeft: width * 0.1, marginVertical: 12, alignSelf: "flex-start" }}>All Ranks</Text>
-            <FlatList
-              data={Ranges}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-              numColumns={3}
-            />
-          </View>
-            </ScrollView>
+          <ScrollView >
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <MyRanking data={userID} />
+              <Text style={{ color: "#fff", marginLeft: width * 0.1, marginVertical: 12, alignSelf: "flex-start" }}>All Ranks</Text>
+              <FlatList
+                data={Ranges}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                numColumns={3}
+              />
+            </View>
+          </ScrollView>
         </View>
       );
     } else {
@@ -259,7 +277,7 @@ const RankingView = ({ subProp }) => {
   ]);
 
   const renderScene = SceneMap({
-    first: () => <RenderFlatListItem type={'emissions'} data={cdata?cdata:tData} />,
+    first: () => <RenderFlatListItem type={'emissions'} data={cdata ? cdata : tData} />,
     second: () => <RenderFlatListItemForRange type={'distribution'} data={tData} />,
   });
   const renderTabBar = props => {
@@ -299,11 +317,21 @@ const RankingView = ({ subProp }) => {
   };
 
   return (
-    <MainScreen style={{ backgroundColor: COLOR_DARKBLACK,paddingBottom:height * 0.02 + 31}}>
+    <MainScreen style={{ backgroundColor: COLOR_DARKBLACK, paddingBottom: height * 0.02 + 31 }}>
       <StatusBar />
       <MainHeader />
       <View style={styles.summaryBoxContainer}>
-        <Text style={{ color: "#fff", fontSize: 16,marginTop:-12, }}>Ranks</Text>
+        {
+          userID === 0 ?
+            <Text style={{ color: "#fff", fontSize: 16, marginTop: -12, }}>Ranks</Text> :
+
+            <View style={{ flexDirection: "row" }}>
+              <Text style={{ color: "#fff", fontSize: 16, marginTop: -12, }}>My Team | </Text>
+              <Text style={{ color: "#00edcf", fontSize: 16, marginTop: -12, }}>Depth </Text>
+
+            </View>
+        }
+
       </View>
       <TabView
         navigationState={{ index, routes }}
